@@ -1,0 +1,30 @@
+V2X textual feature analysis
+Independent of the CNN-BRNN classifiers.
+
+Corpus: 938 messages from data/processed/train.csv, val.csv, and test.csv (Message Content + Message Type).
+TF-IDF vocabulary size: 195 terms.
+
+Linguistic features are computed on the stored message text:
+word count (whitespace tokens), character count, average word length, digit count, uppercase count, punctuation count (string.punctuation), special-character count (not letter, digit, whitespace, or ASCII punctuation), unique word count, and unique-word ratio.
+
+The following features are zero for every message in this corpus, so they do not separate the six classes: n_digits, n_uppercase, n_punctuation, n_special_chars.
+Messages in the current synthetic CSVs are lowercase word sequences without digits or punctuation.
+
+Class means for features that vary:
+- n_words: lowest mean Hazard (6.137), highest mean Emergency (7.168), spread 1.030.
+- n_chars: lowest mean Hazard (39.786), highest mean Emergency (46.779), spread 6.992.
+- avg_word_length: lowest mean Spam (5.372), highest mean Emergency (5.721), spread 0.349.
+- n_unique_words: lowest mean Hazard (6.015), highest mean Emergency (7.034), spread 1.018.
+- unique_word_ratio: lowest mean Roadwork (0.970), highest mean Spam (0.992), spread 0.021.
+
+
+TF-IDF terms below are ranked by contrast (mean TF-IDF inside the class minus mean TF-IDF in the other classes). Positive contrast means the term is more characteristic of that class in this corpus.
+
+- Emergency: emergency (+0.093); clear (+0.082); urgent (+0.077); approaching (+0.076); from (+0.064)
+- Hazard: hazard (+0.076); ahead (+0.073); smoke (+0.062); detected (+0.056); obstacle (+0.056)
+- Roadwork: lane (+0.090); construction (+0.061); repair (+0.061); temporary (+0.060); detour (+0.056)
+- Spam: offer (+0.095); promo (+0.077); deal (+0.054); for (+0.054); exclusive (+0.049)
+- Traffic: alert (+0.069); congestion (+0.060); accident (+0.059); delay (+0.058); gridlock (+0.056)
+- Weather: visibility (+0.082); caution (+0.064); mist (+0.053); low (+0.053); snow (+0.051)
+
+These associations describe the synthetic message texts already in the project. They are not model accuracy, F1, or loss, and they do not change the classification results.

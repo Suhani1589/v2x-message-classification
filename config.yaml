@@ -1,0 +1,78 @@
+# Experiment configuration for V2X message classification.
+# Values marked "paper" come from Lazaga et al. (ICoAIT 2025).
+# Values marked "assumption" are not stated in the paper and are documented choices.
+
+project:
+  name: v2x-message-classification
+  seed: 42
+
+paths:
+  raw_data_dir: data/raw
+  processed_data_dir: data/processed
+  checkpoints_dir: checkpoints
+  results_dir: experiments/results
+  # Preferred official filename from IEEE DataPort:
+  official_csv_candidates:
+    - "V2X_train - Sheet1.csv"
+    - "V2X_train-Sheet1.csv"
+    - "v2x_messages.csv"
+  # Used only when the official CSV is unavailable (see README / PAPER_NOTES).
+  synthetic_csv: data/raw/v2x_messages_synthetic.csv
+
+data:
+  text_column: Message Content
+  label_column: Message Type
+  # Paper label mapping (Section II.D):
+  label_order:
+    - Emergency
+    - Hazard
+    - Roadwork
+    - Spam
+    - Traffic
+    - Weather
+  # Paper used 938 of ~1000 IEEE DataPort rows; exact filter not disclosed.
+  # Assumption: use all valid rows with Message Content + Message Type present.
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  # Paper reports validation_split=0.3 with no held-out test set.
+  # We keep a fixed test set for scientific model comparison (assumption).
+
+preprocessing:
+  max_sequence_length: 12   # paper
+  padding: post             # paper
+  truncating: post          # assumption (paired with post-padding)
+  lowercase: true           # Keras Tokenizer default behavior
+  oov_token: "<OOV>"        # assumption (improves robustness; not in paper)
+  # vocab_size: null means use all tokens seen in the training split
+
+model:
+  # Architecture sizes are NOT specified in the paper ("Keras default parameters").
+  # Assumptions below are conservative and kept identical across all models.
+  embedding_dim: 64
+  rnn_units: 64
+  cnn_filters: 64
+  cnn_kernel_size: 3
+  dense_units: 64
+  # Paper: first Dense uses sigmoid, second Dense uses softmax.
+  use_paper_dense_stack: true
+  dropout: 0.0              # paper does not mention dropout
+
+training:
+  epochs: 10                # paper
+  batch_size: 32            # assumption
+  learning_rate: 0.001      # assumption (Adam default)
+  optimizer: adam
+  # Paper loss: CategoricalCrossentropy (Section II.E)
+  loss: categorical_crossentropy
+  early_stopping_patience: 5  # extra safeguard (assumption); set null to disable
+  checkpoint_monitor: val_loss
+  checkpoint_mode: min
+
+evaluation:
+  average_modes:
+    - macro
+    - weighted
+
+inference:
+  top_k_attention_tokens: 5

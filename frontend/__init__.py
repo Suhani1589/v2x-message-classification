@@ -1,1 +1,1 @@
-# Frontend package marker (Streamlit entry is app.py).
+"""Frontend package for the V2X Command Center Streamlit application."""
